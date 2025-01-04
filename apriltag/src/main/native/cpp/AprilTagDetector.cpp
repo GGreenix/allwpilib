@@ -149,6 +149,11 @@ AprilTagDetector::Results AprilTagDetector::Detect(int width, int height,
       Results::private_init{}};
 }
 
+double[] AprilTagDetector::RecalculateHomography(std::span<const int16_t, 8> corners ){
+  double[] arr = {0.0};
+  return arr;
+}
+
 void AprilTagDetector::Destroy() {
   if (m_impl) {
     apriltag_detector_destroy(static_cast<apriltag_detector_t*>(m_impl));

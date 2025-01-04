@@ -235,7 +235,10 @@ class WPILIB_DLLEXPORT AprilTagDetector {
    * @return Results (array of AprilTagDetection pointers)
    */
   Results Detect(int width, int height, int stride, uint8_t* buf);
-
+  /**
+   * 
+   */
+  double* RecalculateHomography(std::span<const int16_t, 8> corners);
   /**
    * Detect tags from an 8-bit image.
    * The image must be grayscale.

@@ -221,6 +221,18 @@ static jobjectArray MakeJObject(JNIEnv* env,
   }
   return jarr;
 }
+static jdoubleArray MakeJObject(JNIEnv* env,
+                                double* arr) {
+  jobjectArray jarr = env->NewObjectArray(arr.size(), detectionCls, nullptr);
+  if (!jarr) {
+    return nullptr;
+  }
+  for (size_t i = 0; i < arr.size(); ++i) {
+    JLocal<jobject> elem{env, MakeJObject(env, *arr[i])};
+    env->SetObjectArrayElement(jarr, i, elem.obj());
+  }
+  return jarr;
+}
 
 static jobject MakeJObject(JNIEnv* env,
                            const AprilTagDetector::Config& config) {
@@ -496,7 +508,25 @@ Java_edu_wpi_first_apriltag_jni_AprilTagJNI_detect
       env, reinterpret_cast<AprilTagDetector*>(det)->Detect(
                width, height, stride, reinterpret_cast<uint8_t*>(bufAddr)));
 }
+JNIEXPORT jdoubleArray JNICALL
+Java_edu_wpi_first_apriltag_jni_AprilTagJNI_recalculateHomography
+(JNIEnv *env, jclass, jlong det, jintArray cornersCoors)
+{
 
+if (!cornersCoors) {
+    nullPointerEx.Throw(env, "Corners cannot be null");
+    return nullptr;
+  }
+  JSpan<const jint, 8> carr{env, cornersCoors};
+  if (carr.size() != 8) {
+    illegalArgEx.Throw(env, "corners array must be size 8");
+    return nullptr;
+  }
+
+  return MakeJDoubleArray(env,
+  {reinterpret_cast<AprilTagDetector*>(det)->RecalculateHomography(carr)}
+  );
+}
 /*
  * Class:     edu_wpi_first_apriltag_jni_AprilTagJNI
  * Method:    estimatePoseHomography
